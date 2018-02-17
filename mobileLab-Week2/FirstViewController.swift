@@ -1,6 +1,6 @@
 //
-//  ViewController.swift
-//  mobileLab-Week2
+//  FirstViewController.swift
+//  mobileLab-Week3
 //
 //  Created by Diego Cruz on 2/7/18.
 //  Copyright © 2018 Diego Cruz. All rights reserved.
@@ -9,7 +9,7 @@
 import UIKit
 import CoreMotion
 
-class ViewController: UIViewController {
+class FirstViewController: UIViewController {
     //MARK: - Properties
     //MARK: Public
     //IBOutlets
@@ -34,7 +34,7 @@ class ViewController: UIViewController {
     
     //MARK: Private
     //Objects
-    private let correctPasscode:[Orientation] = [.portrait, .portrait, .portrait, .portrait, .portrait, .portrait]
+    private let correctPasscode:[Orientation] = [.landscapeRight, .landscapeRight, .landscapeRight, .landscapeRight, .landscapeRight, .landscapeRight]
     private var attemptedPasscode = [Orientation](){
         didSet{
             didSetAttemptedPasscode()
@@ -70,9 +70,15 @@ class ViewController: UIViewController {
     }
     
     //MARK: - Public methods
+    //MARK: View events
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        reset()
     }
     
     //MARK: - Private methods
@@ -86,11 +92,13 @@ class ViewController: UIViewController {
         switch currentState {
         case .tryAgain:
             perform(after: 2.0, closure: {
-                self.clearAttemptedPasscode()
-                self.currentState = .inputing
+                self.reset()
             })
         case .unlocked:
-            performSegue(withIdentifier: "unlockSegue", sender: self)
+            perform(after: 2.0, closure: {
+                self.performSegue(withIdentifier: "unlockSegue", sender: self)
+            })
+            
         default:
             return
         }
@@ -131,6 +139,11 @@ class ViewController: UIViewController {
     }
     
     //MARK: Util
+    private func reset() {
+        self.clearAttemptedPasscode()
+        self.currentState = .inputing
+    }
+    
     private func isPasscodeCorrect() -> Bool {
         return correctPasscode == attemptedPasscode
     }
